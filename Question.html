@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Do You Love Me?</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffe4e1;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent content from overflowing */
+        }
+
+        .question {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #ff1493;
+            position: relative;
+            z-index: 2; /* Ensure the question is above the rain of kisses */
+        }
+
+        .buttons {
+            position: relative;
+            z-index: 2; /* Ensure buttons are above the rain of kisses */
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            border: none;
+            background-color: #ff69b4;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s; /* Smooth shake and color change */
+        }
+
+        button:hover {
+            background-color: #ff1493;
+        }
+
+        .shake {
+            animation: shake 0.5s; /* Shake effect */
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        #countdown {
+            font-size: 3em;
+            color: #ff1493;
+            margin-top: 20px;
+            display: none; /* Hidden initially */
+            font-weight: bold; /* Bold text */
+            position: relative;
+            z-index: 2; /* Ensure countdown is above the rain of kisses */
+            animation: countdown-slide 3s forwards; /* Animation for the countdown */
+        }
+
+        @keyframes countdown-slide {
+            0% {
+                transform: translateY(-100vh); /* Start from above the screen */
+                opacity: 0;
+            }
+            50% {
+                transform: translateY(50vh); /* Move towards the center */
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(0); /* End at its position */
+                opacity: 1;
+            }
+        }
+
+        #surpriseMessage {
+            display: none;
+            font-size: 3em; /* Larger text for the surprise message */
+            color: #ff1493;
+            margin-top: 20px;
+            font-weight: bold; /* Bold text */
+            position: relative;
+            z-index: 2; /* Ensure message is above the rain of kisses */
+        }
+
+        .kiss-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1; /* Ensure the kiss rain is below other content */
+            overflow: hidden;
+        }
+
+        .kiss-rain span {
+            position: absolute;
+            font-size: 4em; /* Larger size for the kissing emojis */
+            color: #ff1493;
+            opacity: 0;
+            animation: kiss-fall 10s infinite; /* Slower fall animation */
+        }
+
+        @keyframes kiss-fall {
+            0% { transform: translateY(-100px); opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="question">Do you love me?</div>
+        <div class="buttons">
+            <button id="button1" onclick="handleButtonClick(this)">No</button>
+            <button id="button2" onclick="handleButtonClick(this)">No</button>
+        </div>
+        <div id="countdown"></div>
+        <div id="surpriseMessage">I love you more my love!!! 💋💖🥰</div>
+        <div class="kiss-rain"></div>
+    </div>
+
+    <script>
+        let clickCount = 0;
+        let lastClickedButton = null;
+        let buttonsAreYes = false;
+        const totalKisses = 300; // Increased number of kisses
+
+        function handleButtonClick(button) {
+            if (!buttonsAreYes) {
+                clickCount++;
+                if (clickCount >= 6) {
+                    transformLastClickedButton(button);
+                } else {
+                    triggerShakeAndVibrate(button);
+                }
+            } else {
+                // If the button is already Yes, show surprise message
+                if (button.innerText === "Yes") {
+                    startCountdown();
+                } else {
+                    triggerShakeAndVibrate(button);
+                }
+            }
+        }
+
+        function transformLastClickedButton(button) {
+            // Change the last clicked "No" button to "Yes"
+            button.innerText = "Yes";
+            button.classList.remove("shake");
+            buttonsAreYes = true;
+            // Add event listener to the "Yes" button
+            button.onclick = function() {
+                startCountdown();
+            };
+        }
+
+        function triggerShakeAndVibrate(button) {
+            if (button.innerText === "No") {
+                button.classList.add("shake");
+                setTimeout(() => button.classList.remove("shake"), 500); // Remove shake after animation
+                vibrateDevice();
+            }
+        }
+
+        function vibrateDevice() {
+            if (navigator.vibrate) {
+                navigator.vibrate(200); // Vibrate for 200ms
+            }
+        }
+
+        function startCountdown() {
+            document.querySelector(".buttons").style.display = "none";
+            const countdownElement = document.getElementById("countdown");
+            countdownElement.style.display = "block";
+            let countdownValue = 3;
+
+            const countdownInterval = setInterval(() => {
+                countdownElement.textContent = countdownValue.toFixed(1);
+                countdownValue -= 0.1;
+
+                if (countdownValue < 0) {
+                    clearInterval(countdownInterval);
+                    countdownElement.style.display = "none";
+                    showSurpriseMessage();
+                }
+            }, 100); // Update every 100ms for smooth countdown
+        }
+
+        function showSurpriseMessage() {
+            document.getElementById("surpriseMessage").style.display = "block";
+            startKissRain();
+        }
+
+        function startKissRain() {
+            const kissRain = document.querySelector(".kiss-rain");
+            kissRain.innerHTML = ''; // Clear any existing kisses
+
+            // Create a continuous rain of kisses
+            for (let i = 0; i < totalKisses; i++) {
+                const kiss = document.createElement("span");
+                kiss.textContent = "💋";
+                kiss.style.left = `${Math.random() * 100}vw`;
+                kiss.style.top = `${Math.random() * 100}vh`; // Random vertical positions
+                kiss.style.animationDuration = `${Math.random() * 10 + 5}s`; // Longer duration
+                kiss.style.animationDelay = `${Math.random() * 10}s`;
+                kissRain.appendChild(kiss);
+            }
+        }
+    </script>
+
+</body></html>
